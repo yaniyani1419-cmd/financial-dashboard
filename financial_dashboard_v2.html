@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>财务自由仪表板</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; padding: 12px 16px; color: #1a1a1a; font-size: 13px; }
+@media (prefers-color-scheme: dark) { body { background: #191919; color: #e8e8e8; } .metric { background: #252525; } .card { background: #1f1f1f; border-color: rgba(255,255,255,0.08); } .up { background: #252525; border-color: rgba(255,255,255,0.08); } .ui input { background: #2a2a2a; border-color: rgba(255,255,255,0.15); color: #e8e8e8; } }
+.row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 8px; }
+.g2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; margin-bottom: 8px; }
+.metric { background: #f5f5f3; border-radius: 7px; padding: 8px 10px; }
+.ml { font-size: 11px; color: #888; margin-bottom: 2px; }
+.mv { font-size: 17px; font-weight: 500; line-height: 1.2; }
+.ms { font-size: 10px; color: #888; margin-top: 1px; }
+.card { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.ct { font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.red { color: #E24B4A; } .green { color: #1D9E75; } .orange { color: #EF9F27; }
+.bar-wrap { background: #f0f0f0; border-radius: 4px; height: 5px; overflow: hidden; margin: 4px 0 6px; }
+.bar-fill { height: 5px; border-radius: 4px; background: #1D9E75; }
+.leg { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; font-size: 11px; color: #888; }
+.ld { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 3px; }
+.dr { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); font-size: 12px; }
+.dr:last-child { border-bottom: none; }
+.bdg { font-size: 10px; padding: 1px 6px; border-radius: 20px; font-weight: 500; }
+.bdg-r { background: #FCEBEB; color: #A32D2D; }
+.bdg-y { background: #F1EFE8; color: #5F5E5A; }
+.sdiv { border: none; border-top: 0.5px solid rgba(0,0,0,0.08); margin: 6px 0; }
+.up { background: #f9f9f7; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.ug { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 8px; }
+.ui label { display: block; font-size: 10px; color: #888; margin-bottom: 2px; }
+.ui input { width: 100%; font-size: 12px; padding: 4px 7px; border: 0.5px solid rgba(0,0,0,0.15); border-radius: 5px; background: #fff; }
+.btn { font-size: 12px; padding: 5px 12px; border-radius: 6px; border: 0.5px solid rgba(0,0,0,0.2); background: #1a1a1a; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="row">
+  <div>
+    <div style="font-size:16px;font-weight:500;">💎 财务自由仪表板</div>
+    <div style="font-size:11px;color:#888;margin-top:1px;">更新数字后点击刷新</div>
+  </div>
+  <button class="btn" onclick="refreshDashboard()">刷新 ↻</button>
+</div>
+
+<div class="up">
+  <div style="font-size:10px;font-weight:500;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">更新数据</div>
+  <div class="ug">
+    <div class="ui"><label>NEC Maybank (RM)</label><input id="u-nec" type="number" value="1266.10"></div>
+    <div class="ui"><label>PLAY+EDUC GX Bank (RM)</label><input id="u-play" type="number" value="489"></div>
+    <div class="ui"><label>GIVE GX Bank (RM)</label><input id="u-give" type="number" value="122.25"></div>
+    <div class="ui"><label>FFA e-Mas TnG (RM)</label><input id="u-emas" type="number" value="122.25"></div>
+    <div class="ui"><label>FFA Principal Islamic (RM)</label><input id="u-principal" type="number" value="122.25"></div>
+    <div class="ui"><label>LTSS MIGA-i (RM)</label><input id="u-miga" type="number" value="1531.64"></div>
+    <div class="ui"><label>SC Journey 欠款 (RM)</label><input id="u-sc" type="number" value="18379.16"></div>
+    <div class="ui"><label>HSBC 欠款 (RM)</label><input id="u-hsbc" type="number" value="26705"></div>
+    <div class="ui"><label>Maybank FCB 欠款 (RM)</label><input id="u-may" type="number" value="16705"></div>
+  </div>
+</div>
+
+<div class="g4" id="metrics"></div>
+
+<div class="card">
+  <div class="ct">财务自由进度 — 被动收入 ÷ 月支出</div>
+  <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:3px;">
+    <span id="fl">被动收入 RM 0</span><span>目标：月支出待填写</span>
+  </div>
+  <div class="bar-wrap"><div class="bar-fill" id="fb" style="width:0%"></div></div>
+  <div style="font-size:11px;color:#888;" id="fn">FFA 现值 RM 244.50 — 增值型资产，尚未产生现金流</div>
+</div>
+
+<div class="g2">
+  <div class="card">
+    <div class="ct">六罐子余额</div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>NEC</span>
+      <span><span class="ld" style="background:#7F77DD"></span>PLAY+EDUC</span>
+      <span><span class="ld" style="background:#D4537E"></span>FFA</span>
+      <span><span class="ld" style="background:#BA7517"></span>GIVE</span>
+      <span><span class="ld" style="background:#378ADD"></span>LTSS</span>
+    </div>
+    <div style="position:relative;height:130px;"><canvas id="jarsChart" role="img" aria-label="六罐子余额分布"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="ct">负债结构</div>
+    <div class="leg">
+      <span><span class="ld" style="background:#E24B4A"></span>房贷</span>
+      <span><span class="ld" style="background:#EF9F27"></span>信用卡</span>
+      <span><span class="ld" style="background:#7F77DD"></span>个人借款</span>
+    </div>
+    <div style="position:relative;height:130px;"><canvas id="debtChart" role="img" aria-label="负债结构分布"></canvas></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="ct">信用卡负债详情</div>
+  <div id="ccrows"></div>
+  <div class="sdiv"></div>
+  <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;">
+    <span>信用卡总负债</span><span class="red" id="cctotal">RM 61,789</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const MORTGAGE=616380,PERSONAL=33300;
+let jC,dC;
+function fmt(n,d=0){return 'RM '+Number(n).toLocaleString('en-MY',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function v(id){return parseFloat(document.getElementById(id).value)||0;}
+function refreshDashboard(){
+  const nec=v('u-nec'),play=v('u-play'),give=v('u-give'),emas=v('u-emas'),prin=v('u-principal'),miga=v('u-miga');
+  const sc=v('u-sc'),hsbc=v('u-hsbc'),may=v('u-may');
+  const ffa=emas+prin,jarTotal=nec+play+give+ffa+miga;
+  const ccTotal=sc+hsbc+may,liabs=MORTGAGE+ccTotal+PERSONAL,nw=jarTotal-liabs;
+  document.getElementById('metrics').innerHTML=`
+    <div class="metric"><div class="ml">净资产</div><div class="mv ${nw>=0?'green':'red'}">${nw<0?'-':''}RM ${Math.abs(Math.round(nw)).toLocaleString('en-MY')}</div><div class="ms">资产 − 负债</div></div>
+    <div class="metric"><div class="ml">总资产</div><div class="mv">${fmt(jarTotal)}</div><div class="ms">现金 + 投资</div></div>
+    <div class="metric"><div class="ml">总负债</div><div class="mv red">${fmt(liabs)}</div><div class="ms">含个人借款</div></div>
+    <div class="metric"><div class="ml">信用卡欠款</div><div class="mv red">${fmt(ccTotal)}</div><div class="ms">5张卡合计</div></div>`;
+  document.getElementById('fn').textContent=`FFA 现值 ${fmt(ffa,2)} — 增值型资产，尚未产生现金流`;
+  const cards=[{n:'HSBC Visa Signature',o:hsbc,l:28000},{n:'SC Journey',o:sc,l:19000},{n:'Maybank FC Barcelona',o:may,l:15000},{n:'Alliance Infinite',o:0,l:15000},{n:'Alliance Signature',o:0,l:15000}];
+  document.getElementById('ccrows').innerHTML=cards.map(c=>{
+    const pct=c.l>0?Math.min(110,Math.round(c.o/c.l*100)):0;
+    const over=pct>100,hi=pct>=80;
+    const bc=over?'#E24B4A':hi?'#EF9F27':'#1D9E75';
+    return `<div class="dr"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${bc};margin-right:5px;"></span>${c.n}</span><div style="display:flex;align-items:center;gap:6px;"><div style="width:60px;background:#f0f0f0;border-radius:3px;height:4px;overflow:hidden;"><div style="width:${Math.min(100,pct)}%;height:4px;background:${bc};border-radius:3px;"></div></div><span style="font-weight:500;min-width:66px;text-align:right;">${fmt(c.o)}</span><span class="bdg ${over?'bdg-r':pct===0?'bdg-y':'bdg-r'}">${over?'超限':pct+'%'}</span></div></div>`;
+  }).join('');
+  document.getElementById('cctotal').textContent=fmt(ccTotal);
+  if(jC)jC.destroy();
+  jC=new Chart(document.getElementById('jarsChart'),{type:'doughnut',data:{labels:['NEC','PLAY+EDUC','FFA','GIVE','LTSS'],datasets:[{data:[nec,play,ffa,give,miga],backgroundColor:['#1D9E75','#7F77DD','#D4537E','#BA7517','#378ADD'],borderWidth:1,borderColor:'#fff',hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmt(c.parsed,2)}}}}});
+  if(dC)dC.destroy();
+  dC=new Chart(document.getElementById('debtChart'),{type:'doughnut',data:{labels:['房贷','信用卡','个人借款'],datasets:[{data:[MORTGAGE,ccTotal,PERSONAL],backgroundColor:['#E24B4A','#EF9F27','#7F77DD'],borderWidth:1,borderColor:'#fff',hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmt(c.parsed,0)}}}}});
+}
+refreshDashboard();
+</script>
+</body>
+</html>
