@@ -3,226 +3,626 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>财务自由仪表板</title>
+<title>财务自由系统</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; padding: 12px 16px; color: #1a1a1a; font-size: 13px; }
-@media (prefers-color-scheme: dark) { body { background: #191919; color: #e8e8e8; } .metric { background: #252525; } .card { background: #1f1f1f; border-color: rgba(255,255,255,0.08); } }
-.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 8px; }
-.g2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; margin-bottom: 8px; }
-.metric { background: #f5f5f3; border-radius: 7px; padding: 8px 10px; }
-.ml { font-size: 11px; color: #888; margin-bottom: 2px; }
-.mv { font-size: 17px; font-weight: 500; line-height: 1.2; }
-.ms { font-size: 10px; color: #888; margin-top: 1px; }
-.card { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
-.ct { font-size: 10px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-.red { color: #E24B4A; } .green { color: #1D9E75; } .orange { color: #EF9F27; }
-.bar-wrap { background: #f0f0f0; border-radius: 4px; height: 5px; overflow: hidden; margin: 4px 0 6px; }
-.bar-fill { height: 5px; border-radius: 4px; background: #1D9E75; }
-.leg { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; font-size: 11px; color: #888; }
-.ld { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 3px; }
-.dr { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 0.5px solid rgba(0,0,0,0.08); font-size: 12px; }
-.dr:last-child { border-bottom: none; }
-.bdg { font-size: 10px; padding: 1px 6px; border-radius: 20px; font-weight: 500; }
-.bdg-r { background: #FCEBEB; color: #A32D2D; }
-.bdg-y { background: #F1EFE8; color: #5F5E5A; }
-.sdiv { border: none; border-top: 0.5px solid rgba(0,0,0,0.08); margin: 6px 0; }
-.loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
-.error-box { background: #FCEBEB; border-radius: 8px; padding: 12px; margin-bottom: 10px; font-size: 12px; color: #A32D2D; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh}
+@media(prefers-color-scheme:dark){body{background:#141414;color:#e8e8e8}.card{background:#1f1f1f;border-color:rgba(255,255,255,.08)}.metric{background:#252525}.tab-bar,.top-bar{background:#1a1a1a;border-color:rgba(255,255,255,.1)}input,select{background:#2a2a2a;border-color:rgba(255,255,255,.15);color:#e8e8e8}.preview-box{background:#252525}.pb-t{background:#333}.toast{background:#1f1f1f;border-color:rgba(255,255,255,.1)}}
+.top-bar{background:#fff;border-bottom:0.5px solid rgba(0,0,0,.1);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.top-title{font-size:16px;font-weight:500}
+.tab-bar{background:#fff;border-bottom:0.5px solid rgba(0,0,0,.1);display:flex;overflow-x:auto;position:sticky;top:53px;z-index:99;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab{padding:10px 14px;font-size:13px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;font-family:inherit}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:500}
+@media(prefers-color-scheme:dark){.tab.active{color:#e8e8e8;border-bottom-color:#e8e8e8}}
+.content{padding:12px 16px 80px;max-width:720px;margin:0 auto}
+.card{background:#fff;border:0.5px solid rgba(0,0,0,.12);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.metric{background:#f5f5f3;border-radius:8px;padding:10px 12px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.lbl{font-size:11px;color:#888;margin-bottom:2px}
+.big{font-size:20px;font-weight:500;line-height:1.2}
+.sm{font-size:11px;color:#888;margin-top:2px}
+.sec{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid rgba(0,0,0,.06);font-size:13px}
+.row:last-child{border-bottom:none}
+input{width:100%;padding:6px 8px;border:0.5px solid rgba(0,0,0,.2);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1a1a1a}
+select{width:100%;padding:6px 8px;border:0.5px solid rgba(0,0,0,.2);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1a1a1a}
+.btn{padding:7px 14px;border:0.5px solid rgba(0,0,0,.2);border-radius:8px;background:#f5f5f3;color:#1a1a1a;cursor:pointer;font-size:13px;font-family:inherit}
+.btn:hover{background:#ebebea}
+.btn-p{background:#1a1a1a;color:#fff;border-color:#1a1a1a;width:100%;padding:10px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;font-family:inherit}
+.btn-p:hover{opacity:.85}
+.ig{margin-bottom:10px}
+.il{font-size:12px;color:#888;margin-bottom:4px}
+.pb-wrap{margin-bottom:12px}
+.pb-h{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.pb-t{background:#f0f0f0;border-radius:4px;height:8px;overflow:hidden}
+.pb-f{height:8px;border-radius:4px;transition:width .4s}
+.pb-s{font-size:11px;color:#888;margin-top:3px}
+.badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+.br{background:#FCEBEB;color:#A32D2D}
+.by{background:#FAEEDA;color:#854F0B}
+.bg{background:#EAF3DE;color:#3B6D11}
+.bb{background:#E6F1FB;color:#185FA5}
+.alert-box{background:#FCEBEB;border:0.5px solid #F09595;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#A32D2D}
+.success-box{background:#EAF3DE;border:0.5px solid #C0DD97;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#3B6D11}
+.preview-box{background:#f5f5f3;border-radius:8px;padding:10px 12px;margin-bottom:10px}
+.editable{cursor:pointer;text-decoration:underline dotted}
+.green{color:#1D9E75}.red{color:#E24B4A}.orange{color:#EF9F27}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#fff;border:0.5px solid rgba(0,0,0,.12);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.12);z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.settle-banner{background:linear-gradient(135deg,#1D9E75,#0F6E56);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px}
 </style>
 </head>
 <body>
 
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+<div class="top-bar">
   <div>
-    <div style="font-size:16px;font-weight:500;">💎 财务自由仪表板</div>
-    <div style="font-size:11px;color:#888;margin-top:1px;" id="last-updated">正在加载...</div>
+    <div class="top-title">💎 财务自由系统</div>
+    <div style="font-size:11px;color:#888" id="top-date"></div>
   </div>
-  <button onclick="loadData()" style="font-size:12px;padding:5px 12px;border-radius:6px;border:0.5px solid rgba(0,0,0,0.2);background:#1a1a1a;color:#fff;cursor:pointer;">刷新 ↻</button>
+  <div style="text-align:right">
+    <div style="font-size:11px;color:#888">净资产</div>
+    <div style="font-size:18px;font-weight:500" id="top-nw">—</div>
+  </div>
 </div>
 
-<div id="error-area"></div>
-<div id="main-content"><div class="loading">正在从 Notion 读取数据...</div></div>
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab('dashboard',this)">总览</button>
+  <button class="tab" onclick="switchTab('income',this)">收入</button>
+  <button class="tab" onclick="switchTab('liabilities',this)">负债</button>
+  <button class="tab" onclick="switchTab('assets',this)">资产</button>
+  <button class="tab" onclick="switchTab('monthly',this)">月度</button>
+  <button class="tab" onclick="switchTab('settings',this)">设置</button>
+</div>
+
+<div class="content" id="content"></div>
+<div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const NOTION_TOKEN = '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';
-const DB_JARS = '88e02b09-451e-4c57-83a7-f8840d8a6db6';
-const DB_CC = '363c1a0e-9180-4e10-b551-e4fe07afd59d';
-const DB_INV = 'eba05251-0cb8-4277-9166-ca8f943fa6d5';
-const MORTGAGE = 616380;
-const PERSONAL = 33300;
+const SK='fin-v3';
+const JARS=[
+  {key:'nec',label:'NEC',sub:'必需',pct:55,color:'#1D9E75',account:'Maybank 储蓄'},
+  {key:'play_educ',label:'PLAY+EDUC',sub:'享乐+教育',pct:20,color:'#7F77DD',account:'GX Bank Make Me Stronger'},
+  {key:'give',label:'GIVE',sub:'捐献',pct:5,color:'#BA7517',account:'GX Bank GIVE'},
+  {key:'ffa',label:'FFA',sub:'财务自由',pct:10,color:'#D4537E',account:'TnG e-Mas + Principal'},
+  {key:'ltss',label:'LTSS',sub:'长期储蓄',pct:10,color:'#378ADD',account:'Maybank MIGA-i'},
+];
+const DEF={
+  jars:{nec:1266.10,play_educ:489,give:122.25,ffa:244.50,ltss:1531.64},
+  creditCards:[
+    {id:1,name:'Journey Credit Card',bank:'Standard Chartered',limit:19000,balance:18379.16,points:15198,dueDay:27},
+    {id:2,name:'Visa Signature',bank:'HSBC',limit:28000,balance:26705,points:275298,dueDay:22},
+    {id:3,name:'FC Barcelona Visa',bank:'Maybank',limit:15000,balance:16705,points:0,dueDay:22},
+    {id:4,name:'Visa Infinite',bank:'Alliance Bank',limit:15000,balance:0,points:0,dueDay:0},
+    {id:5,name:'Visa Signature',bank:'Alliance Bank',limit:15000,balance:0,points:0,dueDay:0},
+  ],
+  investments:[
+    {id:1,name:'e-Mas (TnG)',type:'e-Mas',qty:0.23,buyPrice:531.52,curPrice:531.52},
+    {id:2,name:'Principal Islamic ETF',type:'ETF',qty:122.25,buyPrice:1,curPrice:1},
+    {id:3,name:'MIGA-i 黄金',type:'黄金',qty:2.646,buyPrice:611.42,curPrice:578.85},
+  ],
+  personalDebts:[
+    {id:1,name:'MTS 学费',amount:15800},
+    {id:2,name:'妈妈保险费',amount:12500},
+    {id:3,name:'家用',amount:5000},
+  ],
+  incomeHistory:[],
+  monthlyRecords:[],
+  passiveIncome:0,
+  mortgage:616380,
+  mortgageMonthly:2880,
+  autoSettleEnabled:true,
+  lastAutoSettle:'',
+};
 
-const PROXY = 'https://notion-proxy.vercel.app/api/notion';
+let D=null,tab='dashboard',lineChart=null,pendingSettleBanner=null;
 
-let jC, dC;
-
-function fmt(n, d=0) {
-  return 'RM ' + Number(n||0).toLocaleString('en-MY', {minimumFractionDigits:d, maximumFractionDigits:d});
+function load(){
+  try{const s=localStorage.getItem(SK);D=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF));}
+  catch{D=JSON.parse(JSON.stringify(DEF));}
+  if(D.autoSettleEnabled===undefined)D.autoSettleEnabled=true;
+  if(D.lastAutoSettle===undefined)D.lastAutoSettle='';
 }
 
-async function queryDB(dbId) {
-  const res = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${NOTION_TOKEN}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({})
-  });
-  if (!res.ok) throw new Error(`Notion API error: ${res.status}`);
-  return res.json();
+function save(){try{localStorage.setItem(SK,JSON.stringify(D));}catch{}}
+
+function fmt(n,d=0){return'RM '+Math.abs(n||0).toLocaleString('en-MY',{minimumFractionDigits:d,maximumFractionDigits:d});}
+
+function showToast(msg,duration=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),duration);
 }
 
-function getProp(page, name, type='number') {
-  const prop = page.properties[name];
-  if (!prop) return 0;
-  if (type === 'number') return prop.number || 0;
-  if (type === 'formula') return prop.formula?.number || 0;
-  if (type === 'select') return prop.select?.name || '';
-  if (type === 'title') return prop.title?.[0]?.plain_text || '';
-  return 0;
+function calc(){
+  const totalJars=Object.values(D.jars).reduce((a,b)=>a+b,0);
+  const totalInvMV=D.investments.reduce((s,i)=>s+i.qty*i.curPrice,0);
+  const totalAssets=totalJars+totalInvMV;
+  const totalCC=D.creditCards.reduce((s,c)=>s+c.balance,0);
+  const totalPersonal=D.personalDebts.reduce((s,d)=>s+d.amount,0);
+  const totalLiabs=D.mortgage+totalCC+totalPersonal;
+  const netWorth=totalAssets-totalLiabs;
+  const now=new Date();
+  const curMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthlyIncome=D.incomeHistory.filter(i=>i.date?.startsWith(curMonth)).reduce((s,i)=>s+i.amount,0);
+  const lastRecord=[...D.monthlyRecords].sort((a,b)=>b.month.localeCompare(a.month))[0];
+  const baseExpense=lastRecord?.expenses||D.mortgageMonthly;
+  const cashflowRate=baseExpense>0?Math.min(999,Math.round(monthlyIncome/baseExpense*100)):0;
+  const freedomRate=baseExpense>0?Math.min(100,Math.round(D.passiveIncome/baseExpense*100)):0;
+  return{totalJars,totalInvMV,totalAssets,totalCC,totalPersonal,totalLiabs,netWorth,monthlyIncome,baseExpense,cashflowRate,freedomRate,curMonth,now};
 }
 
-async function loadData() {
-  document.getElementById('error-area').innerHTML = '';
-  document.getElementById('main-content').innerHTML = '<div class="loading">正在从 Notion 读取数据...</div>';
+// ── AUTO SETTLE LOGIC ──────────────────────────────────────────
+function checkAutoSettle(){
+  if(!D.autoSettleEnabled) return;
+  const now=new Date();
+  const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const curMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const prevDate=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const prevMonth=`${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}`;
+  // Only auto-settle once per month, if last settle != curMonth
+  if(D.lastAutoSettle===curMonth) return;
+  // Check if we have entered a new month (today is on or after 1st)
+  const isNewMonth=now.getDate()>=1&&D.lastAutoSettle!==curMonth;
+  if(!isNewMonth) return;
+  // Check if prev month record already exists
+  const prevExists=D.monthlyRecords.find(r=>r.month===prevMonth);
+  if(prevExists){
+    D.lastAutoSettle=curMonth;
+    save();
+    return;
+  }
+  // Auto-create prev month record
+  const c=calc();
+  const prevIncome=D.incomeHistory.filter(i=>i.date?.startsWith(prevMonth)).reduce((s,i)=>s+i.amount,0);
+  const record={
+    id:Date.now(),
+    month:prevMonth,
+    income:prevIncome,
+    expenses:D.mortgageMonthly,
+    passive:D.passiveIncome,
+    netWorth:c.netWorth,
+    autoSettled:true,
+  };
+  D.monthlyRecords=[record,...D.monthlyRecords.filter(r=>r.month!==prevMonth)];
+  D.lastAutoSettle=curMonth;
+  save();
+  pendingSettleBanner={month:prevMonth,income:prevIncome};
+}
 
-  try {
-    const [jarsData, ccData, invData] = await Promise.all([
-      queryDB(DB_JARS),
-      queryDB(DB_CC),
-      queryDB(DB_INV)
-    ]);
+function pb(value,max,color,label,sub){
+  const pct=max>0?Math.min(100,Math.round(value/max*100)):0;
+  const done=value>=max&&max>0;
+  return`<div class="pb-wrap">
+    <div class="pb-h"><span style="color:#888">${label}</span><span style="font-weight:500;color:${color}">${done?'达成!':pct+'%'}</span></div>
+    <div class="pb-t"><div class="pb-f" style="width:${pct}%;background:${color}"></div></div>
+    ${sub?`<div class="pb-s">${sub}</div>`:''}
+  </div>`;
+}
 
-    const jarPage = jarsData.results[0];
-    const nec = getProp(jarPage, 'NEC 余额 Maybank (RM)');
-    const play = getProp(jarPage, 'PLAY+EDUC 余额 GX Bank (RM)');
-    const give = getProp(jarPage, 'GIVE 余额 GX Bank (RM)');
-    const ltss = getProp(jarPage, 'LTSS 余额 MIGA-i (RM)');
+function switchTab(t,el){
+  tab=t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
 
-    let sc=0, hsbc=0, may=0, alliInf=0, alliSig=0;
-    for (const p of ccData.results) {
-      const bank = getProp(p, '银行', 'select');
-      const name = getProp(p, '信用卡名称', 'title');
-      const owed = getProp(p, '当前欠款 (RM)');
-      const limit = getProp(p, '信用额度 (RM)');
-      if (bank === 'Standard Chartered') sc = owed;
-      else if (bank === 'HSBC') hsbc = owed;
-      else if (bank === 'Maybank') may = owed;
-      else if (bank === 'Alliance Bank' && name.includes('Infinite')) alliInf = owed;
-      else if (bank === 'Alliance Bank' && name.includes('Signature')) alliSig = owed;
-    }
+function render(){
+  if(!D) return;
+  const c=calc();
+  const nwColor=c.netWorth>=0?'#1D9E75':'#E24B4A';
+  document.getElementById('top-date').textContent=c.now.toLocaleDateString('zh-MY',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('top-nw').textContent=(c.netWorth>=0?'':'-')+'RM '+Math.abs(Math.round(c.netWorth)).toLocaleString('en-MY');
+  document.getElementById('top-nw').style.color=nwColor;
+  const map={dashboard:renderDashboard,income:renderIncome,liabilities:renderLiabilities,assets:renderAssets,monthly:renderMonthly,settings:renderSettings};
+  document.getElementById('content').innerHTML=(map[tab]||renderDashboard)(c);
+  if(tab==='monthly') drawLineChart();
+}
 
-    let emas=0, principal=0, miga=0;
-    for (const p of invData.results) {
-      const type = getProp(p, '类型', 'select');
-      const mv = getProp(p, '当前市值 (RM)', 'formula');
-      if (type === 'e-Mas TnG') emas = mv;
-      else if (type === 'Principal Islamic ETF') principal = mv;
-      else if (type === '实体黄金') miga = mv;
-    }
-
-    const ffa = emas + principal;
-    const jarTotal = nec + play + give + ffa + ltss;
-    const ccTotal = sc + hsbc + may + alliInf + alliSig;
-    const liabs = MORTGAGE + ccTotal + PERSONAL;
-    const nw = jarTotal - liabs;
-
-    const now = new Date().toLocaleString('zh-MY', {timeZone:'Asia/Kuala_Lumpur'});
-    document.getElementById('last-updated').textContent = `最后更新：${now}`;
-
-    const cards = [
-      {name:'HSBC Visa Signature', owed:hsbc, limit:28000, bank:'HSBC'},
-      {name:'SC Journey', owed:sc, limit:19000, bank:'Standard Chartered'},
-      {name:'Maybank FC Barcelona', owed:may, limit:15000, bank:'Maybank'},
-      {name:'Alliance Infinite', owed:alliInf, limit:15000, bank:'Alliance Bank'},
-      {name:'Alliance Signature', owed:alliSig, limit:15000, bank:'Alliance Bank'},
-    ];
-
-    document.getElementById('main-content').innerHTML = `
-      <div class="g4">
-        <div class="metric"><div class="ml">净资产</div><div class="mv ${nw>=0?'green':'red'}">${nw<0?'-':''}RM ${Math.abs(Math.round(nw)).toLocaleString('en-MY')}</div><div class="ms">资产 − 负债</div></div>
-        <div class="metric"><div class="ml">总资产</div><div class="mv">${fmt(jarTotal)}</div><div class="ms">现金 + 投资</div></div>
-        <div class="metric"><div class="ml">总负债</div><div class="mv red">${fmt(liabs)}</div><div class="ms">含个人借款</div></div>
-        <div class="metric"><div class="ml">信用卡欠款</div><div class="mv red">${fmt(ccTotal)}</div><div class="ms">5张卡合计</div></div>
-      </div>
-
-      <div class="card">
-        <div class="ct">财务自由进度 — 被动收入 ÷ 月支出</div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:3px;">
-          <span>被动收入 RM 0</span><span>目标：月支出待填写</span>
-        </div>
-        <div class="bar-wrap"><div class="bar-fill" style="width:0%"></div></div>
-        <div style="font-size:11px;color:#888;">FFA 现值 ${fmt(ffa,2)} — 增值型资产，尚未产生现金流</div>
-      </div>
-
+function renderDashboard(c){
+  const cfColor=c.cashflowRate>=100?'#1D9E75':c.cashflowRate>=70?'#EF9F27':'#E24B4A';
+  const nwColor=c.netWorth>=0?'#1D9E75':'#E24B4A';
+  const alerts=D.creditCards.filter(cc=>cc.balance>cc.limit);
+  const settle=pendingSettleBanner;
+  return`
+    ${settle?`<div class="settle-banner">
+      <div style="font-weight:500;font-size:14px;margin-bottom:4px">✓ ${settle.month} 已自动结算</div>
+      <div style="font-size:12px;opacity:.85">上月收入 ${fmt(settle.income,2)} 已存入月度历史记录</div>
+      <button onclick="pendingSettleBanner=null;render()" style="margin-top:8px;padding:4px 12px;border:1px solid rgba(255,255,255,.5);border-radius:6px;background:none;color:#fff;font-size:12px;cursor:pointer">知道了</button>
+    </div>`:''}
+    ${alerts.length?`<div class="alert-box"><b>信用卡超限警示</b>${alerts.map(cc=>`<div style="margin-top:4px">${cc.bank} ${cc.name} — ${fmt(cc.balance,2)} > 额度 ${fmt(cc.limit)}</div>`).join('')}</div>`:''}
+    <div class="g4">
+      <div class="metric"><div class="lbl">月总收入</div><div class="big green">${fmt(c.monthlyIncome,2)}</div><div class="sm">本月累计</div></div>
+      <div class="metric"><div class="lbl">月总支出</div><div class="big red">${fmt(c.baseExpense)}</div><div class="sm">估算</div></div>
+      <div class="metric"><div class="lbl">净现金流</div><div class="big" style="color:${c.monthlyIncome-c.baseExpense>=0?'#1D9E75':'#E24B4A'}">${c.monthlyIncome-c.baseExpense>=0?'+':'-'}${fmt(Math.abs(c.monthlyIncome-c.baseExpense),2)}</div><div class="sm">收入-支出</div></div>
+      <div class="metric"><div class="lbl">净资产</div><div class="big" style="color:${nwColor}">${c.netWorth>=0?'':'-'}${fmt(Math.abs(c.netWorth))}</div><div class="sm">资产-负债</div></div>
+    </div>
+    <div class="card">
+      <div class="sec">六罐子状态 — 点击余额编辑</div>
+      <div class="g5">${JARS.map(j=>`
+        <div style="background:#f5f5f3;border-radius:8px;padding:8px 10px;border-left:3px solid ${j.color};cursor:pointer" onclick="editJar('${j.key}','jd-${j.key}')">
+          <div style="font-size:11px;font-weight:500;color:#888">${j.label}</div>
+          <div style="font-size:10px;color:#888;margin-bottom:4px">${j.pct}%</div>
+          <div id="jd-${j.key}" style="font-size:13px;font-weight:500">${fmt(D.jars[j.key]||0,2)}</div>
+        </div>`).join('')}</div>
+      <div style="font-size:11px;color:#888;margin-top:8px">合计 ${fmt(c.totalJars,2)}</div>
+    </div>
+    <div class="card">
+      <div class="sec">财务自由进度</div>
+      ${pb(c.cashflowRate,100,cfColor,`月现金流率 — 收入 ${fmt(c.monthlyIncome)} ÷ 支出 ${fmt(c.baseExpense)}`,'超过 100% = 正现金流')}
+      ${pb(D.passiveIncome,c.baseExpense,'#D4537E',`财务自由度 — 被动收入 ${fmt(D.passiveIncome)} ÷ 月支出 ${fmt(c.baseExpense)}`,'到达 100% = 财务自由（Kiyosaki 定义）')}
+      <div style="font-size:11px;color:#888;margin-top:4px">下一步：将 FFA 配置到 REITs 或股息 ETF，让被动收入开始增长</div>
+    </div>
+    <div class="card">
+      <div class="sec">资产负债快照</div>
       <div class="g2">
-        <div class="card">
-          <div class="ct">六罐子余额</div>
-          <div class="leg">
-            <span><span class="ld" style="background:#1D9E75"></span>NEC</span>
-            <span><span class="ld" style="background:#7F77DD"></span>PLAY+EDUC</span>
-            <span><span class="ld" style="background:#D4537E"></span>FFA</span>
-            <span><span class="ld" style="background:#BA7517"></span>GIVE</span>
-            <span><span class="ld" style="background:#378ADD"></span>LTSS</span>
-          </div>
-          <div style="position:relative;height:130px;"><canvas id="jarsChart"></canvas></div>
+        <div>
+          <div style="font-size:12px;color:#888;margin-bottom:4px">资产 Assets</div>
+          <div class="row"><span style="color:#888">六罐子现金</span><span style="font-weight:500">${fmt(c.totalJars,2)}</span></div>
+          <div class="row"><span style="color:#888">投资市值</span><span style="font-weight:500">${fmt(c.totalInvMV,2)}</span></div>
+          <div class="row"><span style="font-weight:500">总资产</span><span class="green" style="font-weight:500">${fmt(c.totalAssets,2)}</span></div>
         </div>
-        <div class="card">
-          <div class="ct">负债结构</div>
-          <div class="leg">
-            <span><span class="ld" style="background:#E24B4A"></span>房贷</span>
-            <span><span class="ld" style="background:#EF9F27"></span>信用卡</span>
-            <span><span class="ld" style="background:#7F77DD"></span>个人借款</span>
-          </div>
-          <div style="position:relative;height:130px;"><canvas id="debtChart"></canvas></div>
+        <div>
+          <div style="font-size:12px;color:#888;margin-bottom:4px">负债 Liabilities</div>
+          <div class="row"><span style="color:#888">房贷余额</span><span style="font-weight:500">${fmt(D.mortgage)}</span></div>
+          <div class="row"><span style="color:#888">信用卡总欠款</span><span style="font-weight:500">${fmt(c.totalCC)}</span></div>
+          <div class="row"><span style="color:#888">个人借款</span><span style="font-weight:500">${fmt(c.totalPersonal)}</span></div>
+          <div class="row"><span style="font-weight:500">总负债</span><span class="red" style="font-weight:500">${fmt(c.totalLiabs)}</span></div>
         </div>
       </div>
+      <div style="border-top:0.5px solid rgba(0,0,0,.08);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between">
+        <span style="font-weight:500;font-size:14px">净资产</span>
+        <span style="font-size:20px;font-weight:500;color:${nwColor}">${c.netWorth>=0?'':'-'}${fmt(Math.abs(c.netWorth))}</span>
+      </div>
+    </div>`;
+}
 
-      <div class="card">
-        <div class="ct">信用卡负债详情</div>
-        ${cards.map(c => {
-          const pct = c.limit > 0 ? Math.min(110, Math.round(c.owed/c.limit*100)) : 0;
-          const over = pct > 100, hi = pct >= 80;
-          const bc = over ? '#E24B4A' : hi ? '#EF9F27' : '#1D9E75';
-          return `<div class="dr">
-            <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${bc};margin-right:5px;"></span>${c.name}</span>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <div style="width:60px;background:#f0f0f0;border-radius:3px;height:4px;overflow:hidden;"><div style="width:${Math.min(100,pct)}%;height:4px;background:${bc};border-radius:3px;"></div></div>
-              <span style="font-weight:500;min-width:66px;text-align:right;">${fmt(c.owed)}</span>
-              <span class="bdg ${over?'bdg-r':pct===0?'bdg-y':'bdg-r'}">${over?'超限':pct+'%'}</span>
+function renderIncome(c){
+  const today=new Date().toISOString().slice(0,10);
+  return`
+    <div class="card">
+      <div class="sec">记录收入</div>
+      <div class="g2">
+        <div class="ig"><div class="il">金额 (RM)</div><input type="number" id="inc-amt" placeholder="0.00" oninput="previewJars()" style="font-size:20px;font-weight:500"></div>
+        <div class="ig"><div class="il">来源类型</div><select id="inc-type"><option>顾问月费</option><option>项目收费</option><option>投资股息</option><option>其他</option></select></div>
+      </div>
+      <div class="g2" style="margin-bottom:10px">
+        <div class="ig"><div class="il">来源描述</div><input type="text" id="inc-src" placeholder="例：5月顾问费"></div>
+        <div class="ig"><div class="il">日期</div><input type="date" id="inc-date" value="${today}"></div>
+      </div>
+      <div id="jars-prev" style="display:none" class="preview-box">
+        <div style="font-size:11px;color:#888;margin-bottom:6px">六罐子分配预览</div>
+        <div class="g5" id="jars-prev-grid"></div>
+      </div>
+      <button class="btn-p" onclick="addIncome()">记录收入 + 自动分配到六罐子</button>
+    </div>
+    <div class="card">
+      <div class="sec">本月收入</div>
+      <div style="font-size:20px;font-weight:500;color:#1D9E75;margin-bottom:10px">${fmt(c.monthlyIncome,2)}</div>
+      ${D.incomeHistory.filter(i=>i.date?.startsWith(c.curMonth)).length===0?'<div style="font-size:13px;color:#888">本月暂无记录</div>':
+        D.incomeHistory.filter(i=>i.date?.startsWith(c.curMonth)).map(i=>`
+          <div class="row"><div><div style="font-weight:500">${i.source}</div><div style="font-size:11px;color:#888">${i.date} · ${i.type}</div></div><div class="green" style="font-weight:500">${fmt(i.amount,2)}</div></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="sec">历史收入记录</div>
+      ${D.incomeHistory.length===0?'<div style="font-size:13px;color:#888;padding:8px 0">暂无记录</div>':
+        D.incomeHistory.slice(0,30).map(i=>`
+          <div class="row"><div><div style="font-weight:500">${i.source}</div><div style="font-size:11px;color:#888">${i.date} · ${i.type}</div></div><div class="green" style="font-weight:500">${fmt(i.amount,2)}</div></div>`).join('')}
+    </div>`;
+}
+
+function renderLiabilities(c){
+  return`
+    <div class="g3">
+      <div class="metric"><div class="lbl">信用卡总欠款</div><div class="big red">${fmt(c.totalCC)}</div></div>
+      <div class="metric"><div class="lbl">个人借款</div><div class="big">${fmt(c.totalPersonal)}</div></div>
+      <div class="metric"><div class="lbl">房贷余额</div><div class="big">${fmt(D.mortgage)}</div><div class="sm">月供 ${fmt(D.mortgageMonthly)}</div></div>
+    </div>
+    <div class="card">
+      <div class="sec">信用卡 — 点击金额编辑</div>
+      ${D.creditCards.map(cc=>{
+        const pct=cc.limit>0?Math.round(cc.balance/cc.limit*100):0;
+        const over=pct>100,high=pct>=80;
+        const bc=over?'#E24B4A':high?'#EF9F27':'#1D9E75';
+        return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:0.5px solid rgba(0,0,0,.06)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <div><span style="font-weight:500;font-size:13px">${cc.bank}</span><span style="font-size:12px;color:#888;margin-left:4px">${cc.name}</span>
+            ${over?'<span class="badge br" style="margin-left:6px">超限!</span>':high?`<span class="badge by" style="margin-left:6px">${pct}%</span>`:''}</div>
+            <span class="editable" style="font-weight:500;font-size:13px;color:${bc}" onclick="editCC(${cc.id})" id="cc-${cc.id}">${fmt(cc.balance,2)}</span>
+          </div>
+          <div style="background:#f0f0f0;border-radius:3px;height:5px;overflow:hidden;margin-bottom:5px">
+            <div style="width:${Math.min(100,pct)}%;height:5px;background:${bc};border-radius:3px"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#888">
+            <span>额度 ${fmt(cc.limit)}</span><span>积分 ${cc.points.toLocaleString()}</span>${cc.dueDay>0?`<span>结算 ${cc.dueDay}号</span>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="card">
+      <div class="sec">个人借款</div>
+      <div class="row"><span style="color:#888">MTS 学费</span><div><span class="badge by">次优先</span><span style="font-weight:500;margin-left:8px">RM 15,800</span></div></div>
+      <div class="row"><span style="color:#888">妈妈保险费</span><div><span class="badge by">次优先</span><span style="font-weight:500;margin-left:8px">RM 12,500</span></div></div>
+      <div class="row"><span style="color:#888">家用</span><div><span class="badge bg">最后</span><span style="font-weight:500;margin-left:8px">RM 5,000</span></div></div>
+      <div class="row"><span style="color:#888">房贷</span><span style="font-weight:500">${fmt(D.mortgage)}</span></div>
+    </div>`;
+}
+
+function renderAssets(c){
+  return`
+    <div class="g3">
+      <div class="metric"><div class="lbl">六罐子现金</div><div class="big">${fmt(c.totalJars,2)}</div></div>
+      <div class="metric"><div class="lbl">投资市值</div><div class="big">${fmt(c.totalInvMV,2)}</div></div>
+      <div class="metric"><div class="lbl">总资产</div><div class="big green">${fmt(c.totalAssets,2)}</div></div>
+    </div>
+    <div class="card">
+      <div class="sec">六罐子余额 — 点击编辑</div>
+      ${JARS.map(j=>`
+        <div style="display:flex;align-items:center;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,.06)">
+          <div style="width:3px;height:36px;background:${j.color};border-radius:2px;margin-right:10px;flex-shrink:0"></div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between">
+              <div><span style="font-weight:500;font-size:13px">${j.label}</span><span style="font-size:11px;color:#888;margin-left:6px">${j.pct}% · ${j.account}</span></div>
+              <span class="editable" style="font-weight:500;font-size:14px" onclick="editJar('${j.key}','ja-${j.key}')" id="ja-${j.key}">${fmt(D.jars[j.key]||0,2)}</span>
             </div>
-          </div>`;
-        }).join('')}
-        <div class="sdiv"></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;">
-          <span>信用卡总负债</span><span class="red">${fmt(ccTotal)}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="sec">投资持仓 — 点击当前价编辑</div>
+      ${D.investments.map(inv=>{
+        const mv=inv.qty*inv.curPrice,cost=inv.qty*inv.buyPrice,pnl=mv-cost;
+        return`<div style="padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,.06)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <div><span style="font-weight:500;font-size:13px">${inv.name}</span><span style="font-size:11px;color:#888;margin-left:6px">${inv.qty} 单位</span></div>
+            <div style="text-align:right"><div style="font-weight:500;font-size:13px">${fmt(mv,2)}</div><div style="font-size:11px;color:${pnl>=0?'#1D9E75':'#E24B4A'}">${pnl>=0?'+':'-'}${fmt(Math.abs(pnl),2)}</div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#888">
+            <span>买入价 ${fmt(inv.buyPrice,2)}</span>
+            <span class="editable" onclick="editInv(${inv.id})" id="inv-${inv.id}">当前价 ${fmt(inv.curPrice,2)}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderMonthly(c){
+  const now=new Date().toISOString().slice(0,7);
+  const sorted=[...D.monthlyRecords].sort((a,b)=>b.month.localeCompare(a.month));
+  return`
+    <div class="card">
+      <div class="sec">新增 / 更新月度记录</div>
+      <div class="g3">
+        <div class="ig"><div class="il">月份</div><input type="month" id="m-month" value="${now}"></div>
+        <div class="ig"><div class="il">月总收入 (RM)</div><input type="number" id="m-inc" placeholder="${fmt(c.monthlyIncome,2).replace('RM ','')}" oninput="updateMonthPrev()"></div>
+        <div class="ig"><div class="il">月总支出 (RM)</div><input type="number" id="m-exp" placeholder="${D.mortgageMonthly}" oninput="updateMonthPrev()"></div>
+      </div>
+      <div class="ig"><div class="il">被动收入 (RM) — 股息、租金等</div><input type="number" id="m-pass" placeholder="0" oninput="updateMonthPrev()"></div>
+      <div id="m-prev" style="display:none" class="preview-box"></div>
+      <button class="btn-p" onclick="addMonthly()">储存月度记录</button>
+    </div>
+    ${sorted.length>0?`<div class="card">
+      <div class="sec">历史趋势</div>
+      ${sorted.length>=2?'<div style="position:relative;height:200px;margin-bottom:16px"><canvas id="line-chart" role="img" aria-label="月度收入支出趋势">趋势图</canvas></div>':''}
+      ${sorted.map(r=>{
+        const cf=r.expenses>0?Math.round(r.income/r.expenses*100):0;
+        const fd=r.expenses>0?Math.round((r.passive||0)/r.expenses*100):0;
+        return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:0.5px solid rgba(0,0,0,.06)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-weight:500;font-size:13px">${r.month}</span>
+              ${r.autoSettled?'<span class="badge bb">自动结算</span>':''}
+            </div>
+            <span style="font-size:12px;color:${(r.netWorth||0)>=0?'#1D9E75':'#E24B4A'}">净资产 ${(r.netWorth||0)>=0?'':'-'}${fmt(Math.abs(r.netWorth||0))}</span>
+          </div>
+          <div class="g3" style="margin-bottom:8px">
+            <div style="background:#f5f5f3;border-radius:8px;padding:6px 8px"><div style="font-size:10px;color:#888">收入</div><div style="font-size:13px;font-weight:500;color:#1D9E75">${fmt(r.income)}</div></div>
+            <div style="background:#f5f5f3;border-radius:8px;padding:6px 8px"><div style="font-size:10px;color:#888">支出</div><div style="font-size:13px;font-weight:500;color:#E24B4A">${fmt(r.expenses)}</div></div>
+            <div style="background:#f5f5f3;border-radius:8px;padding:6px 8px"><div style="font-size:10px;color:#888">被动收入</div><div style="font-size:13px;font-weight:500">${fmt(r.passive||0)}</div></div>
+          </div>
+          ${pb(cf,100,cf>=100?'#1D9E75':'#EF9F27',`月现金流率 ${cf}%`,'')}
+          ${pb(r.passive||0,r.expenses,'#D4537E',`财务自由度 ${fd}%`,'')}
+        </div>`;
+      }).join('')}
+    </div>`:''}`;
+}
+
+function renderSettings(){
+  return`
+    <div class="card">
+      <div class="sec">每月自动结算</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-size:13px;font-weight:500">自动结算开关</div>
+          <div style="font-size:12px;color:#888;margin-top:2px">每月1号打开网页时自动创建上月快照</div>
         </div>
-      </div>`;
+        <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">
+          <input type="checkbox" id="auto-settle-toggle" ${D.autoSettleEnabled?'checked':''} onchange="toggleAutoSettle(this.checked)" style="opacity:0;width:0;height:0">
+          <span style="position:absolute;top:0;left:0;right:0;bottom:0;background:${D.autoSettleEnabled?'#1D9E75':'#ccc'};border-radius:24px;transition:.3s">
+            <span style="position:absolute;height:18px;width:18px;left:${D.autoSettleEnabled?'23px':'3px'};bottom:3px;background:#fff;border-radius:50%;transition:.3s"></span>
+          </span>
+        </label>
+      </div>
+      <div style="font-size:12px;color:#888;line-height:1.6;background:#f5f5f3;border-radius:8px;padding:10px 12px">
+        <b style="color:#1a1a1a">自动结算会做什么：</b><br>
+        · 把上个月的收入合计存入月度历史<br>
+        · 记录当时的净资产快照<br>
+        · 在总览页显示「已自动结算」通知<br>
+        <br>
+        <b style="color:#1a1a1a">不会自动改变的：</b><br>
+        · 六罐子余额（你的实际账户余额）<br>
+        · 信用卡欠款（需要你手动更新）<br>
+        · 投资持仓
+      </div>
+      ${D.lastAutoSettle?`<div style="font-size:12px;color:#888;margin-top:8px">上次自动结算：${D.lastAutoSettle}</div>`:''}
+    </div>
+    <div class="card">
+      <div class="sec">手动结算（现在执行）</div>
+      <div style="font-size:12px;color:#888;margin-bottom:10px">如果想立刻为上个月创建快照，点下方按钮</div>
+      <button class="btn" onclick="manualSettle()">立即结算上个月</button>
+    </div>
+    <div class="card">
+      <div class="sec">固定数值设置</div>
+      <div class="g2">
+        <div class="ig"><div class="il">房贷余额 (RM)</div><input type="number" id="s-mortgage" value="${D.mortgage}" onchange="saveSetting('mortgage',this.value)"></div>
+        <div class="ig"><div class="il">房贷月供 (RM)</div><input type="number" id="s-monthly" value="${D.mortgageMonthly}" onchange="saveSetting('mortgageMonthly',this.value)"></div>
+      </div>
+      <div class="ig"><div class="il">被动收入 (RM)</div><input type="number" id="s-passive" value="${D.passiveIncome}" onchange="saveSetting('passiveIncome',this.value)"></div>
+    </div>
+    <div class="card">
+      <div class="sec">数据同步</div>
+      <div style="font-size:13px;color:#888;margin-bottom:12px;line-height:1.6">跨设备使用：先导出 JSON 文件，传到另一台设备后导入即可同步数据。</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="exportData()">导出数据 (JSON)</button>
+        <button class="btn" onclick="document.getElementById('imp-file').click()">导入数据</button>
+        <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec" style="color:#A32D2D">危险操作</div>
+      <button class="btn" style="color:#A32D2D;border-color:#F09595" onclick="resetData()">重置所有数据</button>
+    </div>`;
+}
 
-    if(jC) jC.destroy();
-    jC = new Chart(document.getElementById('jarsChart'), {
-      type:'doughnut',
-      data:{labels:['NEC','PLAY+EDUC','FFA','GIVE','LTSS'],datasets:[{data:[nec,play,ffa,give,ltss],backgroundColor:['#1D9E75','#7F77DD','#D4537E','#BA7517','#378ADD'],borderWidth:1,borderColor:'#fff',hoverOffset:4}]},
-      options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmt(c.parsed,2)}}}}
-    });
+function drawLineChart(){
+  const el=document.getElementById('line-chart');
+  if(!el) return;
+  if(lineChart){lineChart.destroy();lineChart=null;}
+  const sorted=[...D.monthlyRecords].sort((a,b)=>a.month.localeCompare(b.month)).slice(-6);
+  if(sorted.length<2) return;
+  lineChart=new Chart(el,{
+    type:'line',
+    data:{
+      labels:sorted.map(r=>r.month.slice(5)),
+      datasets:[
+        {label:'收入',data:sorted.map(r=>r.income),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,.1)',tension:.3,pointRadius:3},
+        {label:'支出',data:sorted.map(r=>r.expenses),borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,.1)',tension:.3,pointRadius:3},
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{font:{size:11}},grid:{display:false}},y:{ticks:{font:{size:11},callback:v=>'RM'+(v>=1000?Math.round(v/1000)+'k':v)}}}}
+  });
+}
 
-    if(dC) dC.destroy();
-    dC = new Chart(document.getElementById('debtChart'), {
-      type:'doughnut',
-      data:{labels:['房贷','信用卡','个人借款'],datasets:[{data:[MORTGAGE,ccTotal,PERSONAL],backgroundColor:['#E24B4A','#EF9F27','#7F77DD'],borderWidth:1,borderColor:'#fff',hoverOffset:4}]},
-      options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmt(c.parsed,0)}}}}
-    });
+function editJar(key,elId){
+  const el=document.getElementById(elId);
+  if(!el) return;
+  el.outerHTML=`<input type="number" id="${elId}" value="${D.jars[key]||0}" style="width:110px;font-size:13px;text-align:right" onblur="saveJar('${key}','${elId}',this.value)" onkeydown="if(event.key==='Enter')saveJar('${key}','${elId}',this.value)">`;
+  setTimeout(()=>{const i=document.getElementById(elId);if(i){i.focus();i.select();}},50);
+}
+function saveJar(key,id,val){D.jars[key]=parseFloat(val)||0;save();render();showToast(`${key.toUpperCase()} 余额已更新`);}
 
-  } catch(err) {
-    document.getElementById('error-area').innerHTML = `<div class="error-box">⚠️ 读取失败：${err.message}<br><br>请确认 Notion Token 已填入，且 Integration 已连接到所有数据库。</div>`;
-    document.getElementById('main-content').innerHTML = '';
+function editCC(id){
+  const el=document.getElementById('cc-'+id);if(!el) return;
+  const cc=D.creditCards.find(c=>c.id===id);
+  el.outerHTML=`<input type="number" id="cc-${id}" value="${cc.balance}" style="width:110px;font-size:13px;text-align:right" onblur="saveCC(${id},this.value)" onkeydown="if(event.key==='Enter')saveCC(${id},this.value)">`;
+  setTimeout(()=>{const i=document.getElementById('cc-'+id);if(i){i.focus();i.select();}},50);
+}
+function saveCC(id,val){D.creditCards=D.creditCards.map(c=>c.id===id?{...c,balance:parseFloat(val)||0}:c);save();render();showToast('信用卡欠款已更新');}
+
+function editInv(id){
+  const el=document.getElementById('inv-'+id);if(!el) return;
+  const inv=D.investments.find(i=>i.id===id);
+  el.outerHTML=`<input type="number" id="inv-${id}" value="${inv.curPrice}" style="width:100px;font-size:11px;text-align:right" onblur="saveInv(${id},this.value)" onkeydown="if(event.key==='Enter')saveInv(${id},this.value)">`;
+  setTimeout(()=>{const i=document.getElementById('inv-'+id);if(i){i.focus();i.select();}},50);
+}
+function saveInv(id,val){D.investments=D.investments.map(i=>i.id===id?{...i,curPrice:parseFloat(val)||0}:i);save();render();showToast('投资价格已更新');}
+
+function previewJars(){
+  const amt=parseFloat(document.getElementById('inc-amt')?.value)||0;
+  const prev=document.getElementById('jars-prev'),grid=document.getElementById('jars-prev-grid');
+  if(!prev||!grid) return;
+  if(amt<=0){prev.style.display='none';return;}
+  prev.style.display='block';
+  grid.innerHTML=JARS.map(j=>`<div style="text-align:center"><div style="font-size:10px;color:#888">${j.label}</div><div style="font-size:12px;font-weight:500;color:${j.color}">RM ${(amt*j.pct/100).toFixed(2)}</div></div>`).join('');
+}
+
+function addIncome(){
+  const amt=parseFloat(document.getElementById('inc-amt')?.value)||0;
+  const src=document.getElementById('inc-src')?.value||'';
+  const type=document.getElementById('inc-type')?.value||'其他';
+  const date=document.getElementById('inc-date')?.value||new Date().toISOString().slice(0,10);
+  if(amt<=0||!src){alert('请填写金额和来源描述');return;}
+  JARS.forEach(j=>{D.jars[j.key]=+((D.jars[j.key]||0)+amt*j.pct/100).toFixed(2);});
+  D.incomeHistory=[{id:Date.now(),date,amount:amt,source:src,type},...D.incomeHistory];
+  save();render();showToast(`已记录 ${fmt(amt,2)} 并分配到六罐子`);
+}
+
+function updateMonthPrev(){
+  const inc=parseFloat(document.getElementById('m-inc')?.value)||0;
+  const exp=parseFloat(document.getElementById('m-exp')?.value)||D.mortgageMonthly;
+  const pass=parseFloat(document.getElementById('m-pass')?.value)||0;
+  const prev=document.getElementById('m-prev');
+  if(!prev) return;
+  if(!inc&&!exp&&!pass){prev.style.display='none';return;}
+  const cf=exp>0?Math.min(999,Math.round(inc/exp*100)):0;
+  const fd=exp>0?Math.min(100,Math.round(pass/exp*100)):0;
+  prev.style.display='block';
+  prev.innerHTML=`<div style="font-size:11px;color:#888;margin-bottom:8px">进度预览</div>${pb(cf,100,cf>=100?'#1D9E75':'#EF9F27',`月现金流率 ${cf}%`,'')}${pb(pass,exp,'#D4537E',`财务自由度 ${fd}%`,'')}`;
+}
+
+function addMonthly(){
+  const month=document.getElementById('m-month')?.value;
+  if(!month) return;
+  const record={id:Date.now(),month,
+    income:parseFloat(document.getElementById('m-inc')?.value)||0,
+    expenses:parseFloat(document.getElementById('m-exp')?.value)||D.mortgageMonthly,
+    passive:parseFloat(document.getElementById('m-pass')?.value)||0,
+    netWorth:calc().netWorth};
+  D.monthlyRecords=[record,...D.monthlyRecords.filter(r=>r.month!==month)];
+  D.passiveIncome=record.passive;
+  save();render();showToast(`${month} 月度记录已储存`);
+}
+
+function toggleAutoSettle(val){D.autoSettleEnabled=val;save();showToast(val?'自动结算已开启':'自动结算已关闭');}
+
+function manualSettle(){
+  const now=new Date();
+  const prevDate=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const prevMonth=`${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}`;
+  const c=calc();
+  const prevIncome=D.incomeHistory.filter(i=>i.date?.startsWith(prevMonth)).reduce((s,i)=>s+i.amount,0);
+  const record={id:Date.now(),month:prevMonth,income:prevIncome,expenses:D.mortgageMonthly,passive:D.passiveIncome,netWorth:c.netWorth,autoSettled:true};
+  D.monthlyRecords=[record,...D.monthlyRecords.filter(r=>r.month!==prevMonth)];
+  save();render();showToast(`${prevMonth} 已手动结算完成`);
+}
+
+function saveSetting(key,val){D[key]=parseFloat(val)||0;save();showToast('设置已保存');}
+
+function exportData(){
+  const json=JSON.stringify(D,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`financial-data-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('数据已导出');
+}
+
+function importData(e){
+  const file=e.target.files[0];if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{D=JSON.parse(ev.target.result);save();render();showToast('数据导入成功!');}
+    catch{alert('文件格式错误，请使用本系统导出的 JSON 文件');}
+  };
+  reader.readAsText(file);
+}
+
+function resetData(){
+  if(confirm('确定要重置所有数据吗？此操作不可撤销。')){
+    D=JSON.parse(JSON.stringify(DEF));save();render();showToast('数据已重置');
   }
 }
 
-loadData();
+// Init
+load();
+checkAutoSettle();
+render();
 </script>
 </body>
 </html>
